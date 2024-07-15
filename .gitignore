@@ -29,7 +29,8 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
-pubspec.lock
+build/
+# pubspec.lock
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -42,3 +43,4 @@ app.*.map.json
 
 # Test related
 coverage
+.pubignore
