@@ -17,12 +17,12 @@ class InteractiveJsonPreview extends StatefulWidget {
     this.intColor = Colors.deepOrangeAccent,
     this.boolColor = Colors.pink,
     this.doubleColor = Colors.deepOrange,
-    this.curlyBracketColor = Colors.black,
-    this.squareBracketColor = Colors.black,
+    this.curlyBracketColor,
+    this.squareBracketColor,
     this.textStyle = const TextStyle(),
     this.indentLength = 36,
-    this.keyColor = Colors.black,
-    this.commaColor = Colors.black,
+    this.keyColor,
+    this.commaColor,
     this.colonColor = Colors.deepPurple,
   });
 
@@ -48,10 +48,10 @@ class InteractiveJsonPreview extends StatefulWidget {
   final Color doubleColor;
 
   /// Color of Curly brackets
-  final Color curlyBracketColor;
+  final Color? curlyBracketColor;
 
   /// Color of Square brackets
-  final Color squareBracketColor;
+  final Color? squareBracketColor;
 
   /// Textstyle of parsed json data
   final TextStyle textStyle;
@@ -60,10 +60,10 @@ class InteractiveJsonPreview extends StatefulWidget {
   final int indentLength;
 
   /// Color of JSON Color Key
-  final Color keyColor;
+  final Color? keyColor;
 
   /// Color of comma
-  final Color commaColor;
+  final Color? commaColor;
 
   /// Color of colon
   final Color colonColor;
@@ -121,7 +121,9 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
       jsonView.add(
         SelectableText(
           '{',
-          style: TextStyle(color: widget.curlyBracketColor),
+          style: bodySmall?.copyWith(
+            color: widget.curlyBracketColor,
+          ),
         ),
       );
     }
@@ -158,22 +160,29 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                 SelectableText.rich(
                   TextSpan(
                     text: '"$key": ',
-                    style: TextStyle(color: widget.keyColor),
+                    style: bodySmall?.copyWith(
+                      color: widget.keyColor,
+                    ),
                     children: [
                       if (isExpanded && isMap)
                         TextSpan(
                           text: ' {',
-                          style: TextStyle(color: widget.curlyBracketColor),
+                          style: bodySmall?.copyWith(
+                            color: widget.curlyBracketColor,
+                          ),
                         ),
                       if (isExpanded && isList)
                         TextSpan(
                           text: ' [',
-                          style: TextStyle(color: widget.squareBracketColor),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(color: widget.squareBracketColor),
                         ),
                       if (!isExpanded && (isMap || isList)) ...[
                         TextSpan(
                           text: isMap ? '{...}' : '[...]',
-                          style: TextStyle(
+                          style: bodySmall?.copyWith(
                             color: isMap
                                 ? widget.curlyBracketColor
                                 : widget.squareBracketColor,
@@ -192,7 +201,9 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                           children: [
                             TextSpan(
                               text: ',',
-                              style: TextStyle(color: widget.commaColor),
+                              style: bodySmall?.copyWith(
+                                color: widget.commaColor,
+                              ),
                             ),
                           ],
                         ),
@@ -222,7 +233,9 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                 ),
                 child: SelectableText(
                   ' },',
-                  style: TextStyle(color: widget.curlyBracketColor),
+                  style: bodySmall?.copyWith(
+                    color: widget.curlyBracketColor,
+                  ),
                 ),
               ),
             );
@@ -240,9 +253,11 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                 padding: EdgeInsets.only(
                   left: depth * widget.indentLength.toDouble(),
                 ),
-                child: Text(
+                child: SelectableText(
                   ' ],',
-                  style: TextStyle(color: widget.curlyBracketColor),
+                  style: bodySmall?.copyWith(
+                    color: widget.curlyBracketColor,
+                  ),
                 ),
               ),
             );
@@ -254,7 +269,9 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
       jsonView.add(
         SelectableText(
           '}',
-          style: TextStyle(color: widget.curlyBracketColor),
+          style: bodySmall?.copyWith(
+            color: widget.curlyBracketColor,
+          ),
         ),
       );
     }
@@ -273,7 +290,9 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
       jsonObjectView.add(
         SelectableText(
           '[',
-          style: TextStyle(color: widget.squareBracketColor),
+          style: bodySmall?.copyWith(
+            color: widget.squareBracketColor,
+          ),
         ),
       );
     }
@@ -310,7 +329,7 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                   Text.rich(
                     TextSpan(
                       text: isMap ? '{...}' : '[...]',
-                      style: TextStyle(
+                      style: bodySmall?.copyWith(
                         color: isMap
                             ? widget.curlyBracketColor
                             : widget.squareBracketColor,
@@ -333,7 +352,9 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                         children: [
                           TextSpan(
                             text: ',',
-                            style: TextStyle(color: widget.commaColor),
+                            style: bodySmall?.copyWith(
+                              color: widget.commaColor,
+                            ),
                           ),
                         ],
                       ),
@@ -342,7 +363,9 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                 else if (isExpanded)
                   SelectableText(
                     ' {',
-                    style: TextStyle(color: widget.curlyBracketColor),
+                    style: bodySmall?.copyWith(
+                      color: widget.curlyBracketColor,
+                    ),
                   ),
               ],
             ),
@@ -365,9 +388,11 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                 padding: EdgeInsets.only(
                   left: depth * widget.indentLength.toDouble(),
                 ),
-                child: Text(
+                child: SelectableText(
                   ' },',
-                  style: TextStyle(color: widget.curlyBracketColor),
+                  style: bodySmall?.copyWith(
+                    color: widget.curlyBracketColor,
+                  ),
                 ),
               ),
             );
@@ -394,11 +419,14 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
           }
           jsonObjectView.add(
             Padding(
-              padding:
-                  EdgeInsets.only(left: depth * widget.indentLength.toDouble()),
-              child: Text(
+              padding: EdgeInsets.only(
+                left: depth * widget.indentLength.toDouble(),
+              ),
+              child: SelectableText(
                 ' ]',
-                style: TextStyle(color: widget.curlyBracketColor),
+                style: bodySmall?.copyWith(
+                  color: widget.squareBracketColor,
+                ),
               ),
             ),
           );
@@ -410,7 +438,9 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
       jsonObjectView.add(
         SelectableText(
           ']',
-          style: TextStyle(color: widget.squareBracketColor),
+          style: bodySmall?.copyWith(
+            color: widget.squareBracketColor,
+          ),
         ),
       );
     }
@@ -439,21 +469,27 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
     return value.toString();
   }
 
-  TextStyle _getValueTextStyle(dynamic value) {
+  /// Current text theme
+  TextTheme get textTheme => Theme.of(context).textTheme;
+
+  /// Current small body text theme
+  TextStyle? get bodySmall => textTheme.bodySmall;
+
+  TextStyle? _getValueTextStyle(dynamic value) {
     if (value is String) {
-      return TextStyle(color: widget.stringColor);
+      return bodySmall?.copyWith(color: widget.stringColor);
     }
     if (value == null) {
-      return TextStyle(color: widget.nullColor);
+      return bodySmall?.copyWith(color: widget.nullColor);
     }
     if (value is int) {
-      return TextStyle(color: widget.intColor);
+      return bodySmall?.copyWith(color: widget.intColor);
     }
     if (value is bool) {
-      return TextStyle(color: widget.boolColor);
+      return bodySmall?.copyWith(color: widget.boolColor);
     }
     if (value is double) {
-      return TextStyle(color: widget.doubleColor);
+      return bodySmall?.copyWith(color: widget.doubleColor);
     }
     return widget.textStyle;
   }
