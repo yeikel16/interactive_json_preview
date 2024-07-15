@@ -157,57 +157,62 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                     size: 16,
                     color: Colors.grey,
                   ),
-                SelectableText.rich(
-                  TextSpan(
-                    text: '"$key": ',
-                    style: bodySmall?.copyWith(
-                      color: widget.keyColor,
-                    ),
-                    children: [
-                      if (isExpanded && isMap)
-                        TextSpan(
-                          text: ' {',
-                          style: bodySmall?.copyWith(
-                            color: widget.curlyBracketColor,
-                          ),
-                        ),
-                      if (isExpanded && isList)
-                        TextSpan(
-                          text: ' [',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(color: widget.squareBracketColor),
-                        ),
-                      if (!isExpanded && (isMap || isList)) ...[
-                        TextSpan(
-                          text: isMap ? '{...}' : '[...]',
-                          style: bodySmall?.copyWith(
-                            color: isMap
-                                ? widget.curlyBracketColor
-                                : widget.squareBracketColor,
-                          ),
-                        ),
-                        TextSpan(
-                          text: ' // $valueLegth items',
-                          style:
-                              TextStyle(color: Colors.grey[400], fontSize: 12),
-                        ),
-                      ],
-                      if (!isList && !isMap)
-                        TextSpan(
-                          text: _formatValue(value),
-                          style: _getValueTextStyle(value),
-                          children: [
-                            TextSpan(
-                              text: ',',
-                              style: bodySmall?.copyWith(
-                                color: widget.commaColor,
-                              ),
+                Expanded(
+                  child: SelectableText.rich(
+                    TextSpan(
+                      text: '"$key": ',
+                      style: bodySmall?.copyWith(
+                        color: widget.keyColor,
+                      ),
+                      children: [
+                        if (isExpanded && isMap)
+                          TextSpan(
+                            text: ' {',
+                            style: bodySmall?.copyWith(
+                              color: widget.curlyBracketColor,
                             ),
-                          ],
-                        ),
-                    ],
+                          ),
+                        if (isExpanded && isList)
+                          TextSpan(
+                            text: ' [',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(color: widget.squareBracketColor),
+                          ),
+                        if (!isExpanded && (isMap || isList)) ...[
+                          TextSpan(
+                            text: isMap ? '{...}' : '[...]',
+                            style: bodySmall?.copyWith(
+                              color: isMap
+                                  ? widget.curlyBracketColor
+                                  : widget.squareBracketColor,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' // $valueLegth items',
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                        if (!isList && !isMap)
+                          TextSpan(
+                            text: _formatValue(value),
+                            style: _getValueTextStyle(value),
+                            children: [
+                              TextSpan(
+                                text: ',',
+                                style: bodySmall?.copyWith(
+                                  color: widget.commaColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                    maxLines: 1,
                   ),
                 ),
               ],
@@ -358,6 +363,7 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                           ),
                         ],
                       ),
+                      maxLines: 1,
                     ),
                   )
                 else if (isExpanded)
@@ -473,7 +479,9 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
   TextTheme get textTheme => Theme.of(context).textTheme;
 
   /// Current small body text theme
-  TextStyle? get bodySmall => textTheme.bodySmall;
+  TextStyle? get bodySmall => textTheme.bodySmall?.copyWith(
+        overflow: TextOverflow.ellipsis,
+      );
 
   TextStyle? _getValueTextStyle(dynamic value) {
     if (value is String) {
