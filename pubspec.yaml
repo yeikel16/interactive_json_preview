@@ -1,8 +1,8 @@
 name: interactive_json_preview
-description: A pretty interactive JSON viewer
+description: A pretty interactive JSON viewer to improve readability. Collapses and expands sections in which JSON objects are complex at a glance.
 homepage: https://github.com/yeikel16/interactive_json_preview
-repository: https://github.com/yeikel16/interactive_json_preview
-version: 0.0.1
+repository: https://github.com/yeikel16/interactive_json_preview.git
+version: 0.0.1+1
 
 topics:
   - widget
@@ -10,6 +10,12 @@ topics:
   - json
   - preview
   - interactive
+
+screenshots:
+  - description: 'This GIF show how collapses and expands sections in which JSON objects are complex at a glance.'
+    path: assets/view.webp
+  - description: 'A pretty interactive JSON viewer to improve readability.'
+    path: assets/image-1.png
 
 environment:
   sdk: "^3.3.0"
