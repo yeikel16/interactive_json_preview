@@ -88,7 +88,6 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
         itemCount: childrens.length,
         itemBuilder: (context, index) {
           return Row(
-            // crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 alignment: Alignment.centerRight,
@@ -504,8 +503,18 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
 
   List<Widget> _buildChildren(dynamic data) {
     if (data is String) {
-      final json = jsonDecode(data);
-      return _buildChildren(json);
+      if ((data.startsWith('[') && data.endsWith(']')) ||
+          (data.startsWith('{') && data.endsWith('}'))) {
+        final json = jsonDecode(data);
+        return _buildChildren(json);
+      }
+
+      return [
+        Text(
+          data,
+          style: bodySmall?.copyWith(color: widget.stringColor),
+        ),
+      ];
     } else if (data is List) {
       return _buildJsonObjectListView(data, '', 0);
     } else if (data is Map) {
