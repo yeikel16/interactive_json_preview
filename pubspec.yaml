@@ -2,7 +2,7 @@ name: interactive_json_preview
 description: A pretty interactive JSON viewer to improve readability. Collapses and expands sections in which JSON objects are complex at a glance.
 homepage: https://github.com/yeikel16/interactive_json_preview
 repository: https://github.com/yeikel16/interactive_json_preview.git
-version: 0.0.1+1
+version: 0.1.0
 
 topics:
   - widget
@@ -28,5 +28,5 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  mocktail: ^1.0.3
+  mocktail: ^1.0.4
   very_good_analysis: ^5.1.0
