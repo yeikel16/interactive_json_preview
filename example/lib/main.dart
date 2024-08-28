@@ -8,13 +8,47 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Material App',
-      home: Scaffold(
+      home: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
         appBar: AppBar(
           title: const Text('Interactive JSON preview'),
         ),
-        body: InteractiveJsonPreview(data: data),
+        body: Column(
+          children: [
+            const TabBar(tabs: [
+              Tab(
+                text: 'MAP',
+              ),
+              Tab(
+                text: 'LIST',
+              ),
+              Tab(
+                text: 'STRING',
+              ),
+            ]),
+            Expanded(
+                child: TabBarView(children: [
+              InteractiveJsonPreview(data: data),
+              InteractiveJsonPreview(data: [data, data, data]),
+              const InteractiveJsonPreview(data: 'Interactive JSON preview'),
+            ]))
+          ],
+        ),
       ),
     );
   }
