@@ -415,7 +415,7 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
             } else {
               jsonObjectView.addAll(
                 _buildJsonObjectListView(
-                  item as List,
+                  item is Iterable ? item as List : [item],
                   '$stateKey.$i',
                   depth + 1,
                 ),
