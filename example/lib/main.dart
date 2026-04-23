@@ -90,11 +90,6 @@ final data = {
     ]
   },
   "secodt_test": {
-    'err': null,
-    'exitcode': 0,
-    'finished': true,
-    'node': 'pc',
-    'oid': 'lmacro:for_py_macro/my_macro-3',
     'out': [
       11,
       12,
@@ -102,20 +97,5 @@ final data = {
       ['2', 22],
       ['1', 33],
     ],
-    'params': {
-      'args': [11, 12, 13],
-      'kwargs': {'2': 22, '1': 33},
-    },
-    'priority': 100,
-    'status': 'completed',
-    'svc': 'eva.controller.py',
-    'time': {
-      'accepted': '2026-04-23 18:06:24.595',
-      'completed': '2026-04-23 18:06:24.596',
-      'created': '2026-04-23 18:06:24.594',
-      'pending': '2026-04-23 18:06:24.595',
-      'running': '2026-04-23 18:06:24.596',
-    },
-    'uuid': 'f172ea67-c071-41cc-9366-962caf2f3f28',
   }
 };
