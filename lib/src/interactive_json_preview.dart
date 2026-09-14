@@ -24,6 +24,7 @@ class InteractiveJsonPreview extends StatefulWidget {
     this.keyColor,
     this.commaColor,
     this.colonColor = Colors.deepPurple,
+    this.specialCharacterColor = Colors.red,
   });
 
   /// JSON String
@@ -67,6 +68,11 @@ class InteractiveJsonPreview extends StatefulWidget {
 
   /// Color of colon
   final Color colonColor;
+
+  /// Color used to highlight non-printable/control characters
+  /// (e.g. tabs, line breaks) inside [String] values, which are
+  /// rendered using a visible `<0xNN>` placeholder.
+  final Color specialCharacterColor;
 
   @override
   InteractiveJsonPreviewState createState() => InteractiveJsonPreviewState();
@@ -198,9 +204,8 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                         ],
                         if (!isList && !isMap)
                           TextSpan(
-                            text: _formatValue(value),
-                            style: _getValueTextStyle(value),
                             children: [
+                              ..._buildValueSpans(value),
                               TextSpan(
                                 text: ',',
                                 style: bodySmall?.copyWith(
@@ -351,9 +356,8 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                   Expanded(
                     child: SelectableText.rich(
                       TextSpan(
-                        text: _formatValue(value),
-                        style: _getValueTextStyle(value),
                         children: [
+                          ..._buildValueSpans(value),
                           TextSpan(
                             text: ',',
                             style: bodySmall?.copyWith(
@@ -499,6 +503,53 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
       return bodySmall?.copyWith(color: widget.doubleColor);
     }
     return widget.textStyle;
+  }
+
+  /// Builds the list of [InlineSpan]s used to render [value], highlighting
+  /// non-printable/control characters (e.g. tabs, line breaks) inside
+  /// [String] values with [InteractiveJsonPreview.specialCharacterColor].
+  ///
+  /// Non-printable characters are replaced by a visible `<0xNN>` placeholder
+  /// (hexadecimal, 2 digits), since they would otherwise be rendered as
+  /// blank/invisible whitespace.
+  List<InlineSpan> _buildValueSpans(dynamic value) {
+    final baseStyle = _getValueTextStyle(value);
+
+    if (value is! String) {
+      return [TextSpan(text: _formatValue(value), style: baseStyle)];
+    }
+
+    final spans = <InlineSpan>[];
+    final buffer = StringBuffer()..write('"');
+
+    void flushBuffer() {
+      if (buffer.isNotEmpty) {
+        spans.add(TextSpan(text: buffer.toString(), style: baseStyle));
+        buffer.clear();
+      }
+    }
+
+    for (final rune in value.runes) {
+      final isPrintable = rune >= 0x20 && rune != 0x7F;
+      if (isPrintable) {
+        buffer.writeCharCode(rune);
+      } else {
+        flushBuffer();
+        spans.add(
+          TextSpan(
+            text: '<0x${rune.toRadixString(16).padLeft(2, '0').toUpperCase()}>',
+            style: baseStyle?.copyWith(
+              color: widget.specialCharacterColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
+      }
+    }
+    buffer.write('"');
+    flushBuffer();
+
+    return spans;
   }
 
   List<Widget> _buildChildren(dynamic data) {
