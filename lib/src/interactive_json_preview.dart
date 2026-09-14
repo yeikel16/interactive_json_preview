@@ -3,6 +3,18 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+/// {@template special_character_format}
+/// Defines how non-printable/control characters are represented when
+/// [InteractiveJsonPreview.highlightSpecialCharacters] is enabled.
+/// {@endtemplate}
+enum SpecialCharacterFormat {
+  /// Renders the character code in hexadecimal, e.g. `<0x09>`.
+  hexadecimal,
+
+  /// Renders the character code in decimal, e.g. `<009>`.
+  decimal,
+}
+
 /// {@template interactive_json_preview}
 /// A pretty interactive JSON viewer
 /// {@endtemplate}
@@ -24,6 +36,9 @@ class InteractiveJsonPreview extends StatefulWidget {
     this.keyColor,
     this.commaColor,
     this.colonColor = Colors.deepPurple,
+    this.highlightSpecialCharacters = true,
+    this.specialCharacterColor = Colors.red,
+    this.specialCharacterFormat = SpecialCharacterFormat.hexadecimal,
   });
 
   /// JSON String
@@ -67,6 +82,23 @@ class InteractiveJsonPreview extends StatefulWidget {
 
   /// Color of colon
   final Color colonColor;
+
+  /// Whether non-printable/control characters (e.g. tabs, line breaks)
+  /// inside [String] values should be replaced by a visible placeholder
+  /// and highlighted with [specialCharacterColor].
+  ///
+  /// When `false`, [String] values are rendered as-is, exactly like in
+  /// the original implementation.
+  final bool highlightSpecialCharacters;
+
+  /// Color used to highlight non-printable/control characters
+  /// (e.g. tabs, line breaks) inside [String] values, when
+  /// [highlightSpecialCharacters] is `true`.
+  final Color specialCharacterColor;
+
+  /// The numeral system used to represent non-printable/control
+  /// characters when [highlightSpecialCharacters] is `true`.
+  final SpecialCharacterFormat specialCharacterFormat;
 
   @override
   InteractiveJsonPreviewState createState() => InteractiveJsonPreviewState();
@@ -198,9 +230,8 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                         ],
                         if (!isList && !isMap)
                           TextSpan(
-                            text: _formatValue(value),
-                            style: _getValueTextStyle(value),
                             children: [
+                              ..._buildValueSpans(value),
                               TextSpan(
                                 text: ',',
                                 style: bodySmall?.copyWith(
@@ -351,9 +382,8 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
                   Expanded(
                     child: SelectableText.rich(
                       TextSpan(
-                        text: _formatValue(value),
-                        style: _getValueTextStyle(value),
                         children: [
+                          ..._buildValueSpans(value),
                           TextSpan(
                             text: ',',
                             style: bodySmall?.copyWith(
@@ -499,6 +529,66 @@ class InteractiveJsonPreviewState extends State<InteractiveJsonPreview> {
       return bodySmall?.copyWith(color: widget.doubleColor);
     }
     return widget.textStyle;
+  }
+
+  /// Builds the list of [InlineSpan]s used to render [value], highlighting
+  /// non-printable/control characters (e.g. tabs, line breaks) inside
+  /// [String] values with [InteractiveJsonPreview.specialCharacterColor],
+  /// when [InteractiveJsonPreview.highlightSpecialCharacters] is `true`.
+  ///
+  /// Non-printable characters are replaced by a visible placeholder
+  /// (e.g. `<0x09>` or `<009>`, depending on
+  /// [InteractiveJsonPreview.specialCharacterFormat]), since they would
+  /// otherwise be rendered as blank/invisible whitespace.
+  List<InlineSpan> _buildValueSpans(dynamic value) {
+    final baseStyle = _getValueTextStyle(value);
+
+    if (value is! String || !widget.highlightSpecialCharacters) {
+      return [TextSpan(text: _formatValue(value), style: baseStyle)];
+    }
+
+    final spans = <InlineSpan>[];
+    final buffer = StringBuffer()..write('"');
+
+    void flushBuffer() {
+      if (buffer.isNotEmpty) {
+        spans.add(TextSpan(text: buffer.toString(), style: baseStyle));
+        buffer.clear();
+      }
+    }
+
+    for (final rune in value.runes) {
+      final isPrintable = rune >= 0x20 && rune != 0x7F;
+      if (isPrintable) {
+        buffer.writeCharCode(rune);
+      } else {
+        flushBuffer();
+        spans.add(
+          TextSpan(
+            text: _formatSpecialCharacter(rune),
+            style: baseStyle?.copyWith(
+              color: widget.specialCharacterColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
+      }
+    }
+    buffer.write('"');
+    flushBuffer();
+
+    return spans;
+  }
+
+  /// Formats a non-printable/control character [rune] according to
+  /// [InteractiveJsonPreview.specialCharacterFormat].
+  String _formatSpecialCharacter(int rune) {
+    switch (widget.specialCharacterFormat) {
+      case SpecialCharacterFormat.decimal:
+        return '<${rune.toString().padLeft(3, '0')}>';
+      case SpecialCharacterFormat.hexadecimal:
+        return '<0x${rune.toRadixString(16).padLeft(2, '0').toUpperCase()}>';
+    }
   }
 
   List<Widget> _buildChildren(dynamic data) {
